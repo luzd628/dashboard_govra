@@ -10,18 +10,29 @@ with st.sidebar:
     
     st.header('Tentang Kami')
     
-    values = st.slider(
-        label='Select a range of values',
-        min_value=0, max_value=100, value=(0, 100)
-    )
-    st.write('Values:', values)
+    st.write(" Team Capstone Laskar AI ID: LAI25-SM085 ")
+    st.markdown("""
+    Anggota grup
+    - M Faiq Rofifi - Universitas Telkom
+    - Dzul Fikri - Stmik Amikom Surakarta
+    - Alifia Mustika Sari - Universitas PGRI Madiun
+    - Muhammad Faizal Pratama - Universitas Teknologi Digital
+    """)
 
 # Main Page
 st.write(' GOVRA (Governance with AI) adalah platform AI untuk membantu pemerintah kota menganalisis data sosial, ekonomi, dan lingkungan secara real-time, serta menghasilkan narasi kebijakan otomatis. Menggabungkan berbagai analisis dan LLM di Vertex AI, GOVRA mendorong tata kelola kota yang adaptif dan berbasis data.')
 
-st.subheader('Pilihan Fitur:')
+st.markdown("### Fitur Utama GOVRA:")
+st.markdown("""
+- Analisis kenaikan harga pangan
+- Segmentasi wilayah rawan sosial
+- Analisis sentimen publik
+- Klasifikasi gambar kondisi lingkungan
+""")
 
-tab1, tab2, tab3, tab4 = st.tabs(["Tab 1", "Tab 2", "Tab 3", "Tab 4"])
+st.subheader('Pilih Fitur:')
+
+tab1, tab2, tab3, tab4 = st.tabs(["Analisis Harga Pangan", "Segmentasi Wilayah Sosial", "Analisis Sentimen", "Klasifikasi Gambar Sampah"])
  
 # Fungsi Prediksi
 def prediksi_harga_pangan(data):
