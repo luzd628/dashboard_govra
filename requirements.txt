@@ -4,5 +4,5 @@ pandas
 joblib
 altair
 Pillow
-tensorflow>=2.10.0,<2.16.0 
+tensorflow<=2.16.0 
 transformers
