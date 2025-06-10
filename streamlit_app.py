@@ -44,7 +44,7 @@ st.subheader('Pilih Fitur:')
 
 tab1, tab2, tab3, tab4 = st.tabs(["Analisis Harga Pangan", "Segmentasi Wilayah Sosial", "Analisis Sentimen", "Klasifikasi Gambar Sampah"])
  
-
+@st.cache_resource(allow_output_mutation=True)
 def load_artifacts():
     model = load_model('model_sentimen.keras')
     with open('tokenizer.pkl', 'rb') as f:
