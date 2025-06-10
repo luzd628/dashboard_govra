@@ -46,15 +46,15 @@ tab1, tab2, tab3, tab4 = st.tabs(["Analisis Harga Pangan", "Segmentasi Wilayah S
  
 @st.cache_resource(allow_output_mutation=True)
 def load_artifacts():
-    model = load_model('model_sentimen.keras')
+    model_sentimen = load_model('model_sentimen.keras')
     with open('tokenizer.pkl', 'rb') as f:
         tokenizer = pickle.load(f)
-    return model, tokenizer
+    return model_sentimen, tokenizer
 
 def prediksi_sentimen(teks):
     seq = tokenizer.texts_to_sequences([teks])
     padded = pad_sequences(seq, maxlen=max_length, padding='post')
-    pred = model.predict(padded)[0]
+    pred = model_sentimen.predict(padded)[0]
     label_index = np.argmax(pred)
     label_map = {0: 'negatif', 1: 'netral', 2: 'positif'}
     label = label_map[label_index]
@@ -64,10 +64,10 @@ def prediksi_sentimen(teks):
 #------------ Analisis Kenaikan Harga Pangan----------
 @st.cache_resource
 def load_lstm():
-    model = load_model('model_lstm.keras')
+    model_analisis = load_model('model_lstm.keras')
     scaler = joblib.load('scaler.joblib')
     params = joblib.load('lstm_params.joblib')
-    return model, scaler, params
+    return model_analisis, scaler, params
 
 def predict_price_by_date(target_date_str):
     model, scaler, params = load_lstm()
@@ -105,14 +105,14 @@ def predict_price_by_date(target_date_str):
 # --- Fungsi: Generate teks dengan GPT-2 ---
 @st.cache_resource
 def load_gpt2():
-    model = GPT2LMHeadModel.from_pretrained('./gpt2_beras')
+    model_analisis = GPT2LMHeadModel.from_pretrained('./gpt2_beras')
     tokenizer = GPT2Tokenizer.from_pretrained('./gpt2_beras')
-    return model, tokenizer
+    return model_analisis, tokenizer
 
 def generate_policy_text(prompt):
-    model, tokenizer = load_gpt2()
+    model_analisis, tokenizer = load_gpt2()
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    output_ids = model.generate(
+    output_ids = model_analisis.generate(
         input_ids,
         max_length=500,
         temperature=0.7,
@@ -133,7 +133,7 @@ def generate_policy_text(prompt):
 def load_custom_model():
     return load_model("model.h5")
 
-model = load_custom_model()
+model_klasifikasi = load_custom_model()
 
 # ------------------ Load Labels ------------------
 @st.cache_data
@@ -213,7 +213,7 @@ with tab2:
             }
             #hasil = prediksi_segmentasi(data)
             st.success("Prediksi selesai!")
-            s#t.write(hasil)
+            #st.write(hasil)
 
 with tab3:
     st.header("Analisis Sentimen Pelayanan Publik")
@@ -221,7 +221,7 @@ with tab3:
         teks = st.text_area("Masukkan teks opini/sentimen masyarakat")
         submitted = st.form_submit_button("Prediksi")
 
-        model, tokenizer = load_artifacts()
+        model_sentimen, tokenizer = load_artifacts()
         max_length = 200
 
         input_teks = st.text_area("📝 Masukkan opini publik atau keluhan:")
@@ -235,7 +235,7 @@ with tab3:
                 ### 📢 Hasil Analisis
 
                 Model memprediksi bahwa kalimat:
-        "{input_teks.strip()}"
+                "{input_teks.strip()}"
                 termasuk dalam sentimen {label.upper()} dengan tingkat kepercayaan sebesar {confidence*100:.1f}%.
                 Hal ini menunjukkan bahwa pengguna kemungkinan merasa {label_map_display[label]} terhadap isi kalimat tersebut.
                 """)
@@ -273,7 +273,7 @@ with tab4:
                 image_array = np.expand_dims(image_array, axis=0) / 255.0
 
                 # Predict
-                prediction = model.predict(image_array)[0]
+                prediction = model_klasifikasi.predict(image_array)[0]
                 predicted_class = CLASS_NAMES[np.argmax(prediction)]
                 confidence = np.max(prediction)
 
