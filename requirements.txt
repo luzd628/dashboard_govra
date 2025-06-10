@@ -1,2 +1,8 @@
 streamlit
-tensorflow>=2.15.0
+numpy
+pandas
+joblib
+altair
+Pillow
+tensorflow<=2.16.0 
+transformers
