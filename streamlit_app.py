@@ -28,7 +28,7 @@ with st.sidebar:
     - Alifia Mustika Sari - Universitas PGRI Madiun
     - Muhammad Faizal Pratama - Universitas Teknologi Digital
     """)
-
+  
 # Main Page
 st.write(' GOVRA (Governance with AI) adalah platform AI untuk membantu pemerintah kota menganalisis data sosial, ekonomi, dan lingkungan secara real-time, serta menghasilkan narasi kebijakan otomatis. Menggabungkan berbagai analisis dan LLM di Vertex AI, GOVRA mendorong tata kelola kota yang adaptif dan berbasis data.')
 
