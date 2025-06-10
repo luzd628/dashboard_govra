@@ -6,3 +6,4 @@ altair
 Pillow
 tensorflow<=2.10.0 
 transformers
+ 
