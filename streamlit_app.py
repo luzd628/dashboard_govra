@@ -2,6 +2,10 @@ import datetime
 import random
 import requests
 import streamlit as st
+import pickle
+import numpy as np
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 st.title('GOVRA (Governance with AI)')
 
@@ -127,15 +131,60 @@ with tab2:
             st.write(hasil)
 
 with tab3:
-    st.header("Analisis Sentimen Publik")
+    st.header("Analisis Sentimen Pelayanan Publik")
     with st.form("form_sentimen"):
         teks = st.text_area("Masukkan teks opini/sentimen masyarakat")
         submitted = st.form_submit_button("Prediksi")
 
-        if submitted:
-            hasil = prediksi_sentimen(teks)
-            st.success("Prediksi selesai!")
-            st.write(f"Hasil Sentimen: **{hasil}**")
+        def load_artifacts():
+            model = load_model('model_sentimen.keras')
+            with open('tokenizer.pkl', 'rb') as f:
+                tokenizer = pickle.load(f)
+            return model, tokenizer
+
+        model, tokenizer = load_artifacts()
+        max_length = 200
+        def prediksi_sentimen(teks):
+            seq = tokenizer.texts_to_sequences([teks])
+            padded = pad_sequences(seq, maxlen=max_length, padding='post')
+            pred = model.predict(padded)[0]
+            label_index = np.argmax(pred)
+            label_map = {0: 'negatif', 1: 'netral', 2: 'positif'}
+            label = label_map[label_index]
+            confidence = pred[label_index]
+            return label, confidence, pred  # Kembalikan label, skor utama, dan semua skor
+
+        input_teks = st.text_area("📝 Masukkan opini publik atau keluhan:")
+
+        if st.button("🔍 Analisis"):
+            if input_teks.strip():
+                label, confidence, scores = prediksi_sentimen(input_teks)
+                label_map_display = {"negatif": "tidak puas", "netral": "netral", "positif": "puas"}
+
+                st.markdown(f"""
+                ### 📢 Hasil Analisis
+
+                Model memprediksi bahwa kalimat:
+        "{input_teks.strip()}"
+                termasuk dalam sentimen {label.upper()} dengan tingkat kepercayaan sebesar {confidence*100:.1f}%.
+                Hal ini menunjukkan bahwa pengguna kemungkinan merasa {label_map_display[label]} terhadap isi kalimat tersebut.
+                """)
+
+                st.markdown("---")
+                st.subheader("📊 Skor Probabilitas Tiap Kelas:")
+                st.write({
+                    "Negatif": f"{scores[0]*100:.2f}%",
+                    "Netral": f"{scores[1]*100:.2f}%",
+                    "Positif": f"{scores[2]*100:.2f}%"
+                })
+
+                st.bar_chart({
+                    "Negatif": scores[0],
+                    "Netral": scores[1],
+                    "Positif": scores[2]
+                })
+            else:
+                st.warning("⚠️ Silakan masukkan teks terlebih dahulu.")
 
 with tab4:
     st.header("Klasifikasi Gambar Sampah")
