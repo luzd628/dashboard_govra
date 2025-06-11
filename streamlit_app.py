@@ -269,7 +269,7 @@ with tab2:
                 st.markdown("#### ⏳ Angka Harapan Hidup")
                 df_life_exp = pd.DataFrame({
                     'Kategori': ['Wilayah Ini', 'Rata-rata Nasional (Contoh)'],
-                    'Tahun': [life_exp, 71.0] # 71.0 sebagai contoh rata-rata nasional
+                    'Tahun': [life_exp, 74.15]
                 })
                 chart_life_exp = alt.Chart(df_life_exp).mark_bar().encode(
                     x=alt.X('Tahun', title='Angka Harapan Hidup (Tahun)'),
@@ -281,8 +281,8 @@ with tab2:
                 )
                 st.altair_chart(chart_life_exp, use_container_width=True)
 
-                # --- Visualisasi PDRB Regional (Bar Chart) ---
-                st.markdown("#### � PDRB Regional")
+                # --- Visualisasi GDP Regional (Bar Chart) ---
+                st.markdown("#### GDP Regional")
                 df_gdp = pd.DataFrame({'Metrik': ['PDRB Regional'], 'Nilai': [reg_gdp]})
                 chart_gdp = alt.Chart(df_gdp).mark_bar().encode(
                     x=alt.X('Nilai', title='PDRB (Juta Rp)'),
