@@ -6,4 +6,4 @@ altair
 Pillow
 tensorflow==2.19.0
 transformers
-   
+scikit-learn
