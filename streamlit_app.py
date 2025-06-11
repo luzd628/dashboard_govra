@@ -284,7 +284,9 @@ with tab4:
     st.header("Klasifikasi Gambar Sampah")
     with st.form("form_gambar"):
         uploaded_file = st.file_uploader("Upload gambar sampah", type=["png", "jpg", "jpeg"])
-        if uploaded_file:
+        submitted = st.form_submit_button("Klasifikasikan Gambar")
+
+        if submitted and uploaded_file: 
             try:
                 image = Image.open(uploaded_file).convert("RGB")
 
@@ -302,11 +304,11 @@ with tab4:
                 # Layout dua kolom
                 col1, col2 = st.columns([2, 1])
                 with col1:
-                    st.markdown("### 🖼️ Uploaded Image")
+                    st.markdown("### 🖼️ Gambar yang Diunggah")
                     st.image(image, use_container_width=True)
                 with col2:
-                    st.markdown("### 🧠 Prediction Result")
-                    st.success(f"**Category**: {predicted_class}  \n**Confidence**: {confidence * 100:.2f}%")
+                    st.markdown("### 🧠 Hasil Prediksi")
+                    st.success(f"**Kategori**: {predicted_class}  \n**Keyakinan**: {confidence * 100:.2f}%")
 
                     df_result = pd.DataFrame({
                         "Class": CLASS_NAMES,
@@ -320,14 +322,16 @@ with tab4:
                     ).properties(
                         width="container",
                         height=300,
-                        title="Confidence per Class"
+                        title="Keyakinan per Kelas"
                     )
                     st.altair_chart(chart, use_container_width=True)
 
             except Exception as e:
                 st.error(f"⚠️ Error saat memproses gambar: {e}")
-        else:
-            st.info("Silakan unggah gambar melalui sidebar untuk memulai klasifikasi.")
+        elif submitted and not uploaded_file: 
+            st.warning("Mohon unggah gambar terlebih dahulu.")
+        elif not submitted and not uploaded_file: 
+            st.info("Silakan unggah gambar dan klik 'Klasifikasikan Gambar' untuk memulai klasifikasi.")
 
         
         
