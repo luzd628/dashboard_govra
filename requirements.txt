@@ -4,6 +4,7 @@ pandas
 joblib
 altair
 Pillow
+torch
 tensorflow==2.19.0
 transformers
 scikit-learn
