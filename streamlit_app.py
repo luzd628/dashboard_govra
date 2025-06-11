@@ -112,7 +112,26 @@ def generate_policy_text(prompt):
     )
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
+# 3. Analisis Sentimen
+def load_artifacts():
+    model_sentimen = load_model('model_sentimen.keras')
+    with open('tokenizer.pkl', 'rb') as f:
+        tokenizer_sentimen = pickle.load(f)
+    return model_sentimen, tokenizer_sentimen
 
+model_sentimen, tokenizer_sentimen = load_artifacts()
+max_length = 200
+def prediksi_sentimen(teks):
+    seq = tokenizer_sentimen.texts_to_sequences([teks])
+    padded = pad_sequences(seq, maxlen=max_length, padding='post')
+    pred = model_sentimen.predict(padded)[0]
+    label_index = np.argmax(pred)
+    label_map = {0: 'negatif', 1: 'netral', 2: 'positif'}
+    label = label_map[label_index]
+    confidence = pred[label_index]
+    return label, confidence, pred 
+
+# 4. Klasifikasi Gambar
 
 #---------------------------------------UI---------------------------------
 with tab1:
@@ -210,9 +229,36 @@ with tab2:
 
 with tab3:
     st.header("Analisis Sentimen Pelayanan Publik")
-    with st.form("form_sentimen"):
-        teks = st.text_area("Masukkan teks opini/sentimen masyarakat")
-        submitted = st.form_submit_button("Prediksi")
+    input_teks = st.text_area("📝 Masukkan opini publik atau keluhan:")
+    if st.button("🔍 Analisis"):
+        if input_teks.strip():
+            label, confidence, scores = prediksi_sentimen(input_teks)
+            label_map_display = {"negatif": "tidak puas", "netral": "netral", "positif": "puas"}
+
+            st.markdown(f"""
+            ### 📢 Hasil Analisis
+
+            Model memprediksi bahwa kalimat:
+    "{input_teks.strip()}"
+            termasuk dalam sentimen {label.upper()} dengan tingkat kepercayaan sebesar {confidence*100:.1f}%.
+            Hal ini menunjukkan bahwa pengguna kemungkinan merasa {label_map_display[label]} terhadap isi kalimat tersebut.
+            """)
+
+            st.markdown("---")
+            st.subheader("📊 Skor Probabilitas Tiap Kelas:")
+            st.write({
+                "Negatif": f"{scores[0]*100:.2f}%",
+                "Netral": f"{scores[1]*100:.2f}%",
+                "Positif": f"{scores[2]*100:.2f}%"
+            })
+
+            st.bar_chart({
+                "Negatif": scores[0],
+                "Netral": scores[1],
+                "Positif": scores[2]
+            })
+        else:
+            st.warning("⚠️ Silakan masukkan teks terlebih dahulu.")
 
 with tab4:
     st.header("Klasifikasi Gambar Sampah")
