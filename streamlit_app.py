@@ -128,7 +128,7 @@ def generate_policy_text(prompt):
 
 #--------------------Klasifikasi Gambar Sampah-------------- 
 # ------------------ Load Model ------------------
-"""
+
 @st.cache_resource
 def load_custom_model():
     return load_model("model.h5")
@@ -145,14 +145,14 @@ CLASS_NAMES = load_labels()
 
 # ------------------ Validasi Konsistensi ------------------
 try:
-    output_neurons = model.output_shape[-1]
+    output_neurons = model_klasifikasi.output_shape[-1]
     if len(CLASS_NAMES) != output_neurons:
         st.error(f"❌ Jumlah label ({len(CLASS_NAMES)}) tidak sesuai dengan output model ({output_neurons}).\n\nPeriksa kembali `labels.txt` dan arsitektur model.")
         st.stop()
 except Exception as e:
     st.error(f"❌ Gagal memvalidasi label dan output model: {e}")
     st.stop()
-    """
+
 
 #---------------------------------------UI---------------------------------
 with tab1:
@@ -262,7 +262,7 @@ with tab4:
     with st.form("form_gambar"):
         uploaded_file = st.file_uploader("Upload gambar sampah", type=["png", "jpg", "jpeg"])
         show_code = st.sidebar.checkbox("📄 Show Backend Code")
-        """
+        
         if uploaded_file:
             try:
                 image = Image.open(uploaded_file).convert("RGB")
@@ -317,4 +317,4 @@ with tab4:
                 return response.read().decode("utf-8")
 
             st.markdown("### 📄 Backend Code")
-            st.code(get_file_content_as_string("ml_frontend.py"))"""
+            st.code(get_file_content_as_string("ml_frontend.py"))
