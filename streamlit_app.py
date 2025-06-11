@@ -46,7 +46,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Analisis Harga Pangan", "Segmentasi Wilayah S
 
 #----------------Function---------------------
 def load_model_Segmentasi():
-    bundle = joblib.load('./segmentasi_bundle.pkl')
+    bundle = joblib.load('segmentasi_bundle.pkl')
     model_segmentasi = bundle["model"]
     scaler_segmentasi = bundle["scaler"]
     return model_segmentasi, scaler_segmentasi
