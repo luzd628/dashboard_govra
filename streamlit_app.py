@@ -132,6 +132,26 @@ def prediksi_sentimen(teks):
     return label, confidence, pred 
 
 # 4. Klasifikasi Gambar
+def load_custom_model():
+    return load_model("model.h5")
+
+model_klasifikasi = load_custom_model()
+
+def load_labels(path="labels.txt"):
+    with open(path, "r", encoding="utf-8") as f:
+        return [line.strip() for line in f.readlines() if line.strip()]
+
+CLASS_NAMES = load_labels()
+
+try:
+    output_neurons = model_klasifikasi.output_shape[-1]
+    if len(CLASS_NAMES) != output_neurons:
+        st.error(f"❌ Jumlah label ({len(CLASS_NAMES)}) tidak sesuai dengan output model ({output_neurons}).\n\nPeriksa kembali `labels.txt` dan arsitektur model.")
+        st.stop()
+except Exception as e:
+    st.error(f"❌ Gagal memvalidasi label dan output model: {e}")
+    st.stop()
+
 
 #---------------------------------------UI---------------------------------
 with tab1:
@@ -264,6 +284,50 @@ with tab4:
     st.header("Klasifikasi Gambar Sampah")
     with st.form("form_gambar"):
         uploaded_file = st.file_uploader("Upload gambar sampah", type=["png", "jpg", "jpeg"])
-        show_code = st.sidebar.checkbox("📄 Show Backend Code")
+        if uploaded_file:
+            try:
+                image = Image.open(uploaded_file).convert("RGB")
+
+                # Preprocessing
+                input_shape = (150, 150)
+                resized_image = image.resize(input_shape)
+                image_array = img_to_array(resized_image)
+                image_array = np.expand_dims(image_array, axis=0) / 255.0
+
+                # Predict
+                prediction = model_klasifikasi.predict(image_array)[0]
+                predicted_class = CLASS_NAMES[np.argmax(prediction)]
+                confidence = np.max(prediction)
+
+                # Layout dua kolom
+                col1, col2 = st.columns([2, 1])
+                with col1:
+                    st.markdown("### 🖼️ Uploaded Image")
+                    st.image(image, use_container_width=True)
+                with col2:
+                    st.markdown("### 🧠 Prediction Result")
+                    st.success(f"**Category**: {predicted_class}  \n**Confidence**: {confidence * 100:.2f}%")
+
+                    df_result = pd.DataFrame({
+                        "Class": CLASS_NAMES,
+                        "Confidence": prediction
+                    }).sort_values(by="Confidence", ascending=True)
+                    
+                    chart = alt.Chart(df_result).mark_bar().encode(
+                        x=alt.X("Confidence:Q", scale=alt.Scale(domain=[0, 1])),
+                        y=alt.Y("Class:N", sort="-x"),
+                        color=alt.value("#0E79B2")
+                    ).properties(
+                        width="container",
+                        height=300,
+                        title="Confidence per Class"
+                    )
+                    st.altair_chart(chart, use_container_width=True)
+
+            except Exception as e:
+                st.error(f"⚠️ Error saat memproses gambar: {e}")
+        else:
+            st.info("Silakan unggah gambar melalui sidebar untuk memulai klasifikasi.")
+
         
         
