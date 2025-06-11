@@ -243,80 +243,69 @@ with tab2:
                 st.write(f"- Pengeluaran per Kapita: **Rp {exp_percapita:,.0f} Juta**")
 
                 #----------Visualisasai Inputan------------------------------
-                col_kemi, col_harapan = st.columns(2)
+                st.markdown("#### 📉 Persentase Kemiskinan")
+                df_kemiskinan = pd.DataFrame({
+                    'Kategori': ['Miskin', 'Tidak Miskin'],
+                    'Persentase': [poorpeople_percentage, 100 - poorpeople_percentage]
+                })
+                chart_kemiskinan = alt.Chart(df_kemiskinan).mark_arc(outerRadius=100).encode(
+                    theta=alt.Theta(field="Persentase", type="quantitative"),
+                    color=alt.Color(field="Kategori", type="nominal", 
+                                    scale=alt.Scale(range=['#E74C3C', '#2ECC71'])),
+                    order=alt.Order("Persentase", sort="descending"),
+                    tooltip=["Kategori", alt.Tooltip("Persentase", format=".2f")]
+                ).properties(
+                    title='Proporsi Penduduk'
+                )
+                text = chart_kemiskinan.mark_text(radius=120).encode(
+                    text=alt.Text("Persentase", format=".2f"),
+                    order=alt.Order("Persentase", sort="descending"),
+                    color=alt.value("white")
+                )
+                st.altair_chart(chart_kemiskinan + text, use_container_width=True)
 
-                with col_kemi:
-                    st.markdown("#### 📉 Persentase Kemiskinan")
-                    # Data untuk Pie Chart Proporsi Penduduk Miskin vs Tidak Miskin
-                    df_kemiskinan = pd.DataFrame({
-                        'Kategori': ['Miskin', 'Tidak Miskin'],
-                        'Persentase': [poorpeople_percentage, 100 - poorpeople_percentage]
-                    })
-                    chart_kemiskinan = alt.Chart(df_kemiskinan).mark_arc(outerRadius=100).encode( # Outer radius sedikit lebih kecil
-                        theta=alt.Theta(field="Persentase", type="quantitative"),
-                        color=alt.Color(field="Kategori", type="nominal", 
-                                        scale=alt.Scale(range=['#E74C3C', '#2ECC71'])), # Merah untuk miskin, Hijau untuk tidak miskin
-                        order=alt.Order("Persentase", sort="descending"),
-                        tooltip=["Kategori", alt.Tooltip("Persentase", format=".2f")]
-                    ).properties(
-                        title='Proporsi Penduduk'
-                    )
-                    # Menambahkan teks persentase langsung pada chart (ubah warna ke putih untuk tema gelap)
-                    text = chart_kemiskinan.mark_text(radius=120).encode(
-                        text=alt.Text("Persentase", format=".2f"),
-                        order=alt.Order("Persentase", sort="descending"),
-                        color=alt.value("white") # Pastikan warna teks terlihat di tema gelap
-                    )
-                    st.altair_chart(chart_kemiskinan + text, use_container_width=True)
+                # --- Visualisasi Angka Harapan Hidup (Bar Chart) ---
+                st.markdown("#### ⏳ Angka Harapan Hidup")
+                df_life_exp = pd.DataFrame({
+                    'Kategori': ['Wilayah Ini', 'Rata-rata Nasional (Contoh)'],
+                    'Tahun': [life_exp, 71.0] # 71.0 sebagai contoh rata-rata nasional
+                })
+                chart_life_exp = alt.Chart(df_life_exp).mark_bar().encode(
+                    x=alt.X('Tahun', title='Angka Harapan Hidup (Tahun)'),
+                    y=alt.Y('Kategori', sort=None),
+                    color=alt.Color('Kategori', scale=alt.Scale(range=['#27AE60', '#F39C12'])),
+                    tooltip=['Kategori', alt.Tooltip('Tahun', format=".2f")]
+                ).properties(
+                    title='Perbandingan Angka Harapan Hidup'
+                )
+                st.altair_chart(chart_life_exp, use_container_width=True)
 
-                with col_harapan:
-                    st.markdown("#### ⏳ Angka Harapan Hidup")
-                    # Data untuk Bar Chart Angka Harapan Hidup dengan pembanding (contoh)
-                    df_life_exp = pd.DataFrame({
-                        'Kategori': ['Wilayah Ini', 'Rata-rata Nasional (Contoh)'],
-                        'Tahun': [life_exp, 71.0] # 71.0 sebagai contoh rata-rata nasional
-                    })
-                    chart_life_exp = alt.Chart(df_life_exp).mark_bar().encode(
-                        x=alt.X('Tahun', title='Angka Harapan Hidup (Tahun)'),
-                        y=alt.Y('Kategori', sort=None),
-                        color=alt.Color('Kategori', scale=alt.Scale(range=['#27AE60', '#F39C12'])), # Hijau & Oranye
-                        tooltip=['Kategori', alt.Tooltip('Tahun', format=".2f")]
-                    ).properties(
-                        title='Perbandingan Angka Harapan Hidup'
-                    )
-                    st.altair_chart(chart_life_exp, use_container_width=True)
+                # --- Visualisasi PDRB Regional (Bar Chart) ---
+                st.markdown("#### � PDRB Regional")
+                df_gdp = pd.DataFrame({'Metrik': ['PDRB Regional'], 'Nilai': [reg_gdp]})
+                chart_gdp = alt.Chart(df_gdp).mark_bar().encode(
+                    x=alt.X('Nilai', title='PDRB (Juta Rp)'),
+                    y=alt.Y('Metrik', axis=None),
+                    color=alt.value("#3498DB"),
+                    tooltip=['Metrik', alt.Tooltip('Nilai', format=',.0f')]
+                ).properties(
+                    title='Gross Domestic Product Regional'
+                )
+                st.altair_chart(chart_gdp, use_container_width=True)
 
-                # Baris 2 Visualisasi: PDRB Regional dan Pengeluaran Per Kapita
-                col_gdp, col_exp = st.columns(2)
-
-                with col_gdp:
-                    st.markdown("#### 💰 PDRB Regional")
-                    # Data untuk Bar Chart Produk Domestik Regional Bruto
-                    df_gdp = pd.DataFrame({'Metrik': ['PDRB Regional'], 'Nilai': [reg_gdp]})
-                    chart_gdp = alt.Chart(df_gdp).mark_bar().encode(
-                        x=alt.X('Nilai', title='PDRB (Juta Rp)'),
-                        y=alt.Y('Metrik', axis=None),
-                        color=alt.value("#3498DB"), # Warna biru
-                        tooltip=['Metrik', alt.Tooltip('Nilai', format=',.0f')]
-                    ).properties(
-                        title='Gross Domestic Product Regional'
-                    )
-                    st.altair_chart(chart_gdp, use_container_width=True)
-
-                with col_exp:
-                    st.markdown("#### 💸 Pengeluaran Per Kapita")
-                    # Data untuk Bar Chart Pengeluaran Per Kapita
-                    df_exp_percapita = pd.DataFrame({'Metrik': ['Pengeluaran Per Kapita'], 'Nilai': [exp_percapita]})
-                    chart_exp_percapita = alt.Chart(df_exp_percapita).mark_bar().encode(
-                        x=alt.X('Nilai', title='Pengeluaran (Juta Rp)'),
-                        y=alt.Y('Metrik', axis=None),
-                        color=alt.value("#9B59B6"), # Warna ungu
-                        tooltip=['Metrik', alt.Tooltip('Nilai', format=',.0f')]
-                    ).properties(
-                        title='Pengeluaran per Kapita'
-                    )
-                    st.altair_chart(chart_exp_percapita, use_container_width=True)
-            
+                # --- Visualisasi Pengeluaran Per Kapita (Bar Chart) ---
+                st.markdown("#### 💸 Pengeluaran Per Kapita")
+                df_exp_percapita = pd.DataFrame({'Metrik': ['Pengeluaran Per Kapita'], 'Nilai': [exp_percapita]})
+                chart_exp_percapita = alt.Chart(df_exp_percapita).mark_bar().encode(
+                    x=alt.X('Nilai', title='Pengeluaran (Juta Rp)'),
+                    y=alt.Y('Metrik', axis=None),
+                    color=alt.value("#9B59B6"),
+                    tooltip=['Metrik', alt.Tooltip('Nilai', format=',.0f')]
+                ).properties(
+                    title='Pengeluaran per Kapita'
+                )
+                st.altair_chart(chart_exp_percapita, use_container_width=True)
+                
             except Exception as e:
                 st.error(f"Terjadi kesalahan saat melakukan prediksi segmentasi: {e}")
                 st.info("Pastikan model dan scaler segmentasi (segmentasi_bundle.pkl) kompatibel dan terload dengan benar.")
