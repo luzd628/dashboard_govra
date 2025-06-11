@@ -82,26 +82,32 @@ with tab2:
                 'exp_percap': exp_percapita # Pastikan nama kolom sesuai dengan yang diharapkan model
             }])
 
-            # Standardisasi dan prediksi
-            data_input_segmentasi_scaled = scaler_segmentasi.transform(data_input_segmentasi)
-            prediksi = model_segmentasi.predict(data_input_segmentasi_scaled)
-            cluster_id = prediksi[0]
-            # Mapping label
-            cluster_labels = {
-                0: "Wilayah Berkembang dengan Tingkat Kemiskinan Moderat",
-                1: "Pusat Ekonomi dengan Daya Beli Tinggi"
-            }
-            predicted_label = cluster_labels.get(cluster_id, "Cluster tidak dikenal")
+            try:
+                # Standardisasi dan prediksi
+                data_input_segmentasi_scaled = scaler_segmentasi.transform(data_input_segmentasi)
+                prediksi = model_segmentasi.predict(data_input_segmentasi_scaled)
+                cluster_id = prediksi[0]
+                # Mapping label
+                cluster_labels = {
+                    0: "Wilayah Berkembang dengan Tingkat Kemiskinan Moderat",
+                    1: "Pusat Ekonomi dengan Daya Beli Tinggi"
+                }
+                predicted_label = cluster_labels.get(cluster_id, "Cluster tidak dikenal")
 
-            # Output
-            print(f"Wilayah ini diprediksi masuk ke dalam **{predicted_label}**.")
-            print(f"Detail karakteristik wilayah:")
-            print(f"- Persentase orang miskin: **{data_input_segmentasi['poorpeople_percentage'].iloc[0]}%**")
-            print(f"- Produk Domestik Regional Bruto (PDRB): **Rp {data_input_segmentasi['reg_gdp'].iloc[0]:,.0f}**")
-            print(f"- Angka Harapan Hidup: **{data_input_segmentasi['life_exp'].iloc[0]} tahun**")
-            print(f"- Rata-rata Lama Sekolah: **{data_input_segmentasi['avg_schooltime'].iloc[0]} tahun**")
-            print(f"- Pengeluaran per Kapita: **Rp {data_input_segmentasi['exp_percap'].iloc[0]:,.0f}**")
-            st.write(f"Data input untuk wilayah **{wilayah}**:")
+                # Output
+                print(f"Wilayah ini diprediksi masuk ke dalam **{predicted_label}**.")
+                print(f"Detail karakteristik wilayah:")
+                print(f"- Persentase orang miskin: **{data_input_segmentasi['poorpeople_percentage'].iloc[0]}%**")
+                print(f"- Produk Domestik Regional Bruto (PDRB): **Rp {data_input_segmentasi['reg_gdp'].iloc[0]:,.0f}**")
+                print(f"- Angka Harapan Hidup: **{data_input_segmentasi['life_exp'].iloc[0]} tahun**")
+                print(f"- Rata-rata Lama Sekolah: **{data_input_segmentasi['avg_schooltime'].iloc[0]} tahun**")
+                print(f"- Pengeluaran per Kapita: **Rp {data_input_segmentasi['exp_percap'].iloc[0]:,.0f}**")
+                st.write(f"Data input untuk wilayah **{wilayah}**:")
+            
+            except Exception as e:
+                st.error(f"Terjadi kesalahan saat melakukan prediksi segmentasi: {e}")
+                st.info("Pastikan model dan scaler segmentasi (segmentasi_bundle.pkl) kompatibel dan terload dengan benar.")
+            
 
 with tab3:
     st.header("Analisis Sentimen Pelayanan Publik")
