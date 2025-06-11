@@ -4,6 +4,6 @@ pandas
 joblib
 altair
 Pillow
-tensorflow
+tensorflow==2.12.0
 transformers
    
