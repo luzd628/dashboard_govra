@@ -243,6 +243,7 @@ with tab2:
                 st.write(f"- Pengeluaran per Kapita: **Rp {exp_percapita:,.0f} Juta**")
 
                 #----------Visualisasai Inputan------------------------------
+                st.markdown("---")
                 st.markdown("#### 📉 Persentase Kemiskinan")
                 df_kemiskinan = pd.DataFrame({
                     'Kategori': ['Miskin', 'Tidak Miskin'],
