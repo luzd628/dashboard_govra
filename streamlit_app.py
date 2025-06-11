@@ -95,14 +95,16 @@ with tab2:
                 predicted_label = cluster_labels.get(cluster_id, "Cluster tidak dikenal")
 
                 # Output
-                print(f"Wilayah ini diprediksi masuk ke dalam **{predicted_label}**.")
-                print(f"Detail karakteristik wilayah:")
-                print(f"- Persentase orang miskin: **{data_input_segmentasi['poorpeople_percentage'].iloc[0]}%**")
-                print(f"- Produk Domestik Regional Bruto (PDRB): **Rp {data_input_segmentasi['reg_gdp'].iloc[0]:,.0f}**")
-                print(f"- Angka Harapan Hidup: **{data_input_segmentasi['life_exp'].iloc[0]} tahun**")
-                print(f"- Rata-rata Lama Sekolah: **{data_input_segmentasi['avg_schooltime'].iloc[0]} tahun**")
-                print(f"- Pengeluaran per Kapita: **Rp {data_input_segmentasi['exp_percap'].iloc[0]:,.0f}**")
-                st.write(f"Data input untuk wilayah **{wilayah}**:")
+                st.markdown("---")
+                st.subheader("Hasil Prediksi Segmentasi")
+                st.success(f"Wilayah **{wilayah}** diprediksi masuk ke dalam segmen: **{predicted_label}**.")
+
+                st.markdown("### Detail Karakteristik Input Wilayah:")
+                st.write(f"- Persentase Orang Miskin: **{poorpeople_percentage:.2f}%**")
+                st.write(f"- Produk Domestik Regional Bruto (PDRB): **Rp {reg_gdp:,.0f} Juta**")
+                st.write(f"- Angka Harapan Hidup: **{life_exp:.2f} tahun**")
+                st.write(f"- Rata-rata Lama Sekolah: **{avg_schooltime:.2f} tahun**")
+                st.write(f"- Pengeluaran per Kapita: **Rp {exp_percapita:,.0f} Juta**")
             
             except Exception as e:
                 st.error(f"Terjadi kesalahan saat melakukan prediksi segmentasi: {e}")
