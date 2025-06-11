@@ -148,11 +148,11 @@ with tab1:
             st.text(summary)
 
             # Generate dari GPT-2
-            with st.spinner("Menganalisis kebijakan..."):
-                gpt_output = generate_policy_text(summary)
+            #with st.spinner("Menganalisis kebijakan..."):
+             #   gpt_output = generate_policy_text(summary)
 
             st.subheader("Analisis & Rekomendasi Kebijakan")
-            st.text(gpt_output)
+            #st.text(gpt_output)
 
    
 
